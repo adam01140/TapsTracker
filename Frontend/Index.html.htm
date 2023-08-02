@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sighting Tracker</title>
+    <script src="https://unpkg.com/vue@2.6.14"></script>
+    <script src="https://unpkg.com/axios@0.21.1/dist/axios.min.js"></script>
+</head>
+<body>
+
+
+
+
+    <div id="app">
+        <h1>Sighting Tracker</h1>
+        
+        <h2>Create Sighting</h2>
+        <form @submit.prevent="createSighting">
+            <label>
+                Location:
+                <select v-model="newSighting.location">
+                    <option disabled value="">Select location</option>
+                    <option>Cowell</option>
+                    <option>Porter</option>
+                    <option>Kresge</option>
+                </select>
+            </label>
+            <button type="submit">Submit</button>
+        </form>
+        
+        <h2>All Sightings</h2>
+        <ul>
+            <li v-for="sighting in sightings" :key="sighting._id">
+                {{ new Date(sighting.timestamp).toLocaleString() }} - {{ sighting.location }}
+            </li>
+        </ul>
+    </div>
+    
+    <script>
+
+
+
+
+var express = require('express')
+var cors = require('cors')
+var app = express()
+
+app.use(cors())
+
+app.get('/products/:id', function (req, res, next) {
+  res.json({msg: 'This is CORS-enabled for all origins!'})
+})
+
+app.listen(80, function () {
+  console.log('CORS-enabled web server listening on port 80')
+})
+
+
+
+var corsOptions = {
+  origin: '*',
+  optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
+}
+
+app.get('/products/:id', cors(corsOptions), function (req, res, next) {
+  res.json({msg: 'This is CORS-enabled for only example.com.'})
+})
+
+app.listen(80, function () {
+  console.log('CORS-enabled web server listening on port 80')
+})
+
+
+
+        new Vue({
+            el: '#app',
+            data: {
+                newSighting: {
+                    location: ''
+                },
+                sightings: []
+            },
+            async created() {
+                const response = await axios.get('http://localhost:3000/api/sightings');
+                this.sightings = response.data;
+            },
+            methods: {
+                async createSighting() {
+                    const response = await axios.post('http://localhost:3000/api/sightings', this.newSighting);
+                    this.sightings.push(response.data);
+                    this.newSighting = { location: '' };
+                }
+            }
+        });
+    </script>
+    <style>
+
+            body {margin: 5% auto; background: #f2f2f2; color: #444444; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; font-size: 16px; line-height: 1.8; text-shadow: 0 1px 0 #ffffff; max-width: 73%;}
+            code {background: white;}
+            a {border-bottom: 1px solid #444444; color: #444444; text-decoration: none;}
+            a:hover {border-bottom: 0;}
+        </style>
+    </style>
+</body>
+</html>
